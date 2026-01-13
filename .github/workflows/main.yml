@@ -7,87 +7,72 @@ jobs:
         runs-on: windows-latest
         steps:
         - uses: actions/checkout@main
-        - name: prepare
+          with:
+              repository: floooh/chips-test
+        - uses: denoland/setup-deno@v2
+        - name: win-vstudio-debug
           run: |
-            mkdir workspace
-            cd workspace
-            git clone https://github.com/floooh/chips-test
-            cd chips-test
-        - name: win64-vstudio-debug
+            ./fibs config win-vstudio-debug
+            ./fibs build
+            ./fibs run chips-test
+        - name: win-vstudio-release
           run: |
-            cd workspace/chips-test
-            python fips build win64-vstudio-debug
-        - name: win64-vstudio-release
-          run: |
-            cd workspace/chips-test
-            python fips build win64-vstudio-release
-        - name: chips-test win64-vstudio-debug
-          run: |
-            cd workspace/chips-test
-            python fips run chips-test win64-vstudio-debug
+            ./fibs config win-vstudio-release
+            ./fibs build
     mac:
         runs-on: macos-latest
         steps:
         - uses: actions/checkout@main
-        - name: prepare
+          with:
+              repository: floooh/chips-test
+        - uses: ashutoshvarma/setup-ninja@master
+        - uses: denoland/setup-deno@v2
+        - name: macos-ninja-debug
           run: |
-            mkdir workspace
-            cd workspace
-            git clone https://github.com/floooh/chips-test
-            cd chips-test
-        - name: osx-make-debug
-          run:  |
-            cd workspace/chips-test
-            python fips build osx-make-debug
-        - name: osx-make-release
-          run:  |
-            cd workspace/chips-test
-            python fips build osx-make-release
-        - name: chips-test osx-make-debug
-          run:  |
-            cd workspace/chips-test
-            python fips run chips-test osx-make-debug
+            ./fibs config macos-ninja-debug
+            ./fibs build
+            ./fibs run chips-test
+        - name: macos-ninja-release
+          run: |
+            ./fibs config macos-ninja-release
+            ./fibs build
     linux:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@main
+          with:
+              repository: floooh/chips-test
+        - uses: ashutoshvarma/setup-ninja@master
+        - uses: denoland/setup-deno@v2
         - name: prepare
-          run: |
+          run:  |
             sudo apt-get update
             sudo apt-get install libglu1-mesa-dev mesa-common-dev xorg-dev libasound-dev
-            mkdir workspace
-            cd workspace
-            git clone https://github.com/floooh/chips-test
-            cd chips-test
         - name: linux-make-debug
-          run:  |
-            cd workspace/chips-test
-            python fips build linux-make-debug
+          run: |
+            ./fibs config linux-ninja-debug
+            ./fibs build
+            ./fibs run chips-test
         - name: linux-make-release
-          run:  |
-            cd workspace/chips-test
-            python fips build linux-make-release
-        - name: chips-test linux-make-debug
-          run:  |
-            cd workspace/chips-test
-            python fips run chips-test linux-make-debug
+          run: |
+            ./fibs config linux-ninja-release
+            ./fibs build
     emscripten:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@main
-        - name: prepare
+          with:
+              repository: floooh/chips-test
+        - uses: ashutoshvarma/setup-ninja@master
+        - uses: denoland/setup-deno@v2
+        - name: install emsdk
           run: |
-            sudo apt-get install ninja-build
-            mkdir workspace
-            cd workspace
-            git clone https://github.com/floooh/chips-test
-            cd chips-test
-            python fips emsdk install latest
+            ./fibs emsdk install
         - name: wasm-ninja-debug
           run: |
-            cd workspace/chips-test
-            python fips build wasm-ninja-debug
+            ./fibs config emsc-ninja-debug
+            ./fibs build
         - name: wasm-ninja-release
           run: |
-            cd workspace/chips-test
-            python fips build wasm-ninja-release
+            ./fibs config emsc-ninja-release
+            ./fibs build
